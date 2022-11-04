@@ -4,7 +4,7 @@ import OrdersRow from "./OrdersRow";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
   useEffect(() => {
     fetch(`http://localhost:5000/orders?email=${user?.email}`)
       .then((res) => res.json())
@@ -17,10 +17,27 @@ const Orders = () => {
         method: "DELETE",
       })
         .then((res) => res.json())
-        .then((data) => console.log(data));
+        .then((data) => {
+          if (data.deletedCount > 0) {
+            const remaining = orders.filter((odr) => odr._id !== id);
+            setOrders(remaining);
+            alert("Delete successfully.");
+          }
+        });
     }
     console.log(`I am deleting ${id}`);
   };
+  // const handleStatusUpdate = (id) => {
+  //   fetch(`http://localhost:5000/orders/${id}`, {
+  //     method: "PATCH",
+  //     headers: { "content-type": "application/json" },
+  //     body: JSON.stringify({ status: "Aproved" }),
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => console.log(data));
+  // };
+
+
   return (
     <div>
       <div className="overflow-x-auto w-full">
@@ -40,6 +57,7 @@ const Orders = () => {
                 key={order._id}
                 order={order}
                 handleDelete={handleDelete}
+            
               ></OrdersRow>
             ))}
           </tbody>
