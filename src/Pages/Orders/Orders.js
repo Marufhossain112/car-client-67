@@ -27,17 +27,27 @@ const Orders = () => {
     }
     console.log(`I am deleting ${id}`);
   };
-  // const handleStatusUpdate = (id) => {
-  //   fetch(`http://localhost:5000/orders/${id}`, {
-  //     method: "PATCH",
-  //     headers: { "content-type": "application/json" },
-  //     body: JSON.stringify({ status: "Aproved" }),
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => console.log(data));
-  // };
+  const handleStatusUpdate = (id) => {
+    fetch(`http://localhost:5000/orders/${id}`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ status: "Approved" }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.modifiedCount > 0) {
+          const remaining = orders.filter((odr) => odr._id !== id);
+          const approving = orders.find((odr) => odr._id === id);
+          approving.status = "Approved";
 
-
+          const newOrders = [approving, ...remaining];
+          setOrders(newOrders);
+        }
+      });
+  };
   return (
     <div>
       <div className="overflow-x-auto w-full">
@@ -57,7 +67,7 @@ const Orders = () => {
                 key={order._id}
                 order={order}
                 handleDelete={handleDelete}
-            
+                handleStatusUpdate={handleStatusUpdate}
               ></OrdersRow>
             ))}
           </tbody>
