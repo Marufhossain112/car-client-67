@@ -10,15 +10,24 @@ const Orders = () => {
       .then((res) => res.json())
       .then((data) => setOrders(data));
   }, [user?.email]);
+  const handleDelete = (id) => {
+    const agreement = window.confirm(`Are you sure , you want to delete ?`);
+    if (agreement) {
+      fetch(`http://localhost:5000/orders/${id}`, {
+        method: "DELETE",
+      })
+        .then((res) => res.json())
+        .then((data) => console.log(data));
+    }
+    console.log(`I am deleting ${id}`);
+  };
   return (
     <div>
       <div className="overflow-x-auto w-full">
         <table className="table w-full">
           <thead>
             <tr>
-              <th>
-              {/*  */}
-              </th>
+              <th>{/*  */}</th>
               <th>Name</th>
               <th>Job</th>
               <th>Favorite Color</th>
@@ -27,7 +36,11 @@ const Orders = () => {
           </thead>
           <tbody>
             {orders.map((order) => (
-              <OrdersRow key={order._id} order={order}></OrdersRow>
+              <OrdersRow
+                key={order._id}
+                order={order}
+                handleDelete={handleDelete}
+              ></OrdersRow>
             ))}
           </tbody>
         </table>
